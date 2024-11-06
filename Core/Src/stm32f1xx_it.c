@@ -205,7 +205,6 @@ void EXTI0_IRQHandler(void)
   /* USER CODE BEGIN EXTI0_IRQn 0 */
 	if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_0) != 0x00u) {
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-		gui_switch();
 		HAL_GPIO_EXTI_Callback(GPIO_PIN_0);
 		return;
 

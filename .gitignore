@@ -32,3 +32,6 @@
 *.app
 
 cmake-build-*
+
+Debug/
+Release

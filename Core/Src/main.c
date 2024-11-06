@@ -16,7 +16,6 @@
   ******************************************************************************
   */
 #include "lcd.h"
-#include "gui.h"
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -53,29 +52,7 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-const char data[] =
-{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x20, 0x80, 0x00, 0x20, 0x00, 0x01, 0x20, 0xf8, 0x1f, 0xfc, 0x09, 0x11, 0x20, 0x08, 0x11, 0x20, 0x08, 0x11, 0x20, 0x08, 0x11, 0x20, 0xf8, 0x1f, 0x20, 0x08, 0x11, 0xa0, 0x09, 0x11, 0xe0, 0x08, 0x11, 0x60, 0x18, 0x11, 0x10, 0xe0, 0x0f, 0x18, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
-};
-int draw_kun = 0;
-void toggle_screen() {
-	draw_kun = !draw_kun;
-	LCD_Clear(0, 0, LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, WHITE);
 
-}
-void do_draw_kun() {
-	// LCD_Clear(0, 0, LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, WHITE);
-
-	LCD_OpenWindow(150, 150, 24, 24);
-	LCD_Write_Cmd ( CMD_SetPixel );
-	for (int i = 0; i < 24 * 24; ++i) {
-		int bit = data[i / 8] & (1 << ( i % 8 ));
-		if (bit)
-			LCD_Write_Data(BLACK);
-		else
-			LCD_Write_Data(WHITE);
-	}
-}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -123,14 +100,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 gui_draw();
-	 if (draw_kun) {
-		 do_draw_kun();
-	 } else {
-		 LCD_DrawString(0, 0, "Jiangkun, QIU");
-		 LCD_DrawDot(50, 50, BLACK);
-		 LCD_DrawEllipse(120, 160, 25, 75, BLACK);
-	 }
 	 HAL_Delay(100);
     /* USER CODE END WHILE */
 

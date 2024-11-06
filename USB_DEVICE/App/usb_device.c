@@ -71,7 +71,11 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID_KB) != USBD_OK)
+  {
+    Error_Handler();
+  }
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID_MS) != USBD_OK)
   {
     Error_Handler();
   }
