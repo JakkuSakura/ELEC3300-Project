@@ -109,8 +109,7 @@ USBD_HID_HandleTypeDef;
   * @{
   */
 
-extern USBD_ClassTypeDef  USBD_HID_KB;
-extern USBD_ClassTypeDef  USBD_HID_MS;
+extern USBD_ClassTypeDef  USBD_HID;
 #define USBD_HID_CLASS    &USBD_HID
 /**
   * @}

@@ -67,6 +67,7 @@ NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 NVIC.PriorityGroup=NVIC_PRIORITYGROUP_4
 NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 NVIC.SysTick_IRQn=true\:15\:0\:false\:false\:true\:false\:true\:true
+NVIC.USB_HP_CAN1_TX_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
 NVIC.USB_LP_CAN1_RX0_IRQn=true\:0\:0\:false\:false\:true\:false\:true\:true
 NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 OSC_IN.Mode=HSE-External-Oscillator

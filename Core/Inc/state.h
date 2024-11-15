@@ -16,7 +16,7 @@ typedef struct {
     StateButton continuous;
 } StateInputButton;
 
-inline void init_state_input_button(StateInputButton *input) {
+static inline void init_state_input_button(StateInputButton *input) {
     bzero(input, sizeof(StateInputButton));
     strcpy(input->trigger.name, "trigger");
     strcpy(input->aim.name, "aim");
@@ -25,7 +25,7 @@ inline void init_state_input_button(StateInputButton *input) {
 }
 
 // joystick
-const int8_t JOYSTICK_THRESHOLD = 10;
+static const int8_t JOYSTICK_THRESHOLD = 10;
 typedef struct {
     int8_t x;
     int8_t y;
@@ -37,17 +37,17 @@ inline void init_state_input_joystick(StateInputJoystick *joystick) {
 // https://deskthority.net/wiki/Scancode
 
 // reload
-const int32_t CODE_R = 0x15;
+static const int32_t CODE_R = 0x15;
 // WASD
-const int32_t CODE_W = 0x1A;
-const int32_t CODE_A = 0x04;
-const int32_t CODE_S = 0x16;
-const int32_t CODE_D = 0x07;
+static const int32_t CODE_W = 0x1A;
+static const int32_t CODE_A = 0x04;
+static const int32_t CODE_S = 0x16;
+static const int32_t CODE_D = 0x07;
 
 // jump
-const int32_t CODE_SPACE = 0x2C;
+static const int32_t CODE_SPACE = 0x2C;
 // crouch
-const int32_t CODE_LSHIFT = 0x12;
+static const int32_t CODE_LSHIFT = 0x12;
 typedef struct {
     uint32_t code;
     uint8_t pressed;
@@ -64,7 +64,7 @@ typedef struct {
     OutputKey crouch;
 } OutputKeyboard;
 
-inline void init_output_keyboard(OutputKeyboard *output) {
+static inline void init_output_keyboard(OutputKeyboard *output) {
     bzero(output, sizeof(OutputKeyboard));
     output->reload.code = CODE_R;
     output->forward.code = CODE_W;
@@ -76,10 +76,10 @@ inline void init_output_keyboard(OutputKeyboard *output) {
 }
 
 // fire
-const uint8_t MOUSE_LEFT = 0x01;
+static const uint8_t MOUSE_LEFT = 0x01;
 // aim
-const uint8_t MOUSE_RIGHT = 0x02;
-const int8_t MOUSE_SPEED = 16;
+static const uint8_t MOUSE_RIGHT = 0x02;
+static const int8_t MOUSE_SPEED = 16;
 typedef struct {
     uint8_t status;
     // left negative, right positive
@@ -89,7 +89,7 @@ typedef struct {
 
 } OutputMouse;
 
-inline void init_output_mouse(OutputMouse *output) {
+static inline void init_output_mouse(OutputMouse *output) {
     bzero(output, sizeof(OutputMouse));
 }
 
@@ -98,22 +98,22 @@ typedef struct {
     OutputMouse mouse;
 } StateOutput;
 
-inline void init_state_output(StateOutput *output) {
+static inline void init_state_output(StateOutput *output) {
     init_output_keyboard(&output->keyboard);
     init_output_mouse(&output->mouse);
 }
 
-const float ACCELERATION_VELOCITY_THRESHOLD = 0.1f;
+static const float ACCELERATION_VELOCITY_THRESHOLD = 0.1f;
 typedef struct {
     float x;
     float y;
     float z;
 } StateAngularVelocity;
 
-inline void init_state_rotate(StateAngularVelocity *rotate) {
+static inline void init_state_rotate(StateAngularVelocity *rotate) {
     bzero(rotate, sizeof(StateAngularVelocity));
 }
-const float ROTATION_THRESHOLD = 0.1f;
+static const float ROTATION_THRESHOLD = 0.1f;
 typedef struct {
     float x;
     float y;
@@ -132,7 +132,7 @@ typedef struct {
     StateOutput output;
 } State;
 
-inline void init_state(State *state) {
+static inline void init_state(State *state) {
     init_state_input_button(&state->input_btn);
     init_state_input_joystick(&state->input_joystick);
     init_state_rotate(&state->angular_velocity);
@@ -140,7 +140,7 @@ inline void init_state(State *state) {
     init_state_output(&state->output);
 }
 
-inline void apply_state(State *state) {
+static inline void apply_state(State *state) {
     init_state_output(&state->output);
     // mouse
     if (state->input_btn.trigger.pressed) {

@@ -15,7 +15,6 @@
   *
   ******************************************************************************
   */
-#include "lcd.h"
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -25,7 +24,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lcd.h"
+#include "usbd_hid.h"
+#include "state.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 
 /* USER CODE BEGIN PV */
 
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +59,16 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern USBD_HandleTypeDef hUsbDeviceFS;
 
+typedef struct {
+    uint8_t buttons;
+    int8_t mouse_x;
+    int8_t mouse_y;
+    int8_t wheel;
+} mouseHID;
+
+mouseHID mousehid = {0, 0, 0, 0};
 
 
 /* USER CODE END 0 */
@@ -93,18 +104,20 @@ int main(void)
   MX_FSMC_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  LCD_INIT();
+    LCD_INIT();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	 HAL_Delay(100);
+    while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
+        mousehid.mouse_x = 30;
+        USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof(mousehid));
+        HAL_Delay(10);
+    }
   /* USER CODE END 3 */
 }
 

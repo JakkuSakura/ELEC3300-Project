@@ -219,6 +219,20 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles USB high priority or CAN TX interrupts.
+  */
+void USB_HP_CAN1_TX_IRQHandler(void)
+{
+  /* USER CODE BEGIN USB_HP_CAN1_TX_IRQn 0 */
+
+  /* USER CODE END USB_HP_CAN1_TX_IRQn 0 */
+  HAL_PCD_IRQHandler(&hpcd_USB_FS);
+  /* USER CODE BEGIN USB_HP_CAN1_TX_IRQn 1 */
+
+  /* USER CODE END USB_HP_CAN1_TX_IRQn 1 */
+}
+
+/**
   * @brief This function handles USB low priority or CAN RX0 interrupts.
   */
 void USB_LP_CAN1_RX0_IRQHandler(void)
@@ -240,7 +254,6 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
 	if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_13) != 0x00u) {
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
-		toggle_screen();
 		HAL_GPIO_EXTI_Callback(GPIO_PIN_13);
 		return;
 
