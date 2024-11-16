@@ -14,6 +14,7 @@ typedef struct {
     StateButton aim;
     StateButton reload;
     StateButton continuous;
+    StateButton crouch;
 } StateInputButton;
 
 static inline void init_state_input_button(StateInputButton *input) {
@@ -22,6 +23,7 @@ static inline void init_state_input_button(StateInputButton *input) {
     strcpy(input->aim.name, "aim");
     strcpy(input->reload.name, "reload");
     strcpy(input->continuous.name, "continuous");
+    strcpy(input->crouch.name, "crouch");
 }
 
 // joystick
@@ -46,7 +48,7 @@ static const int32_t CODE_D = 0x07;
 
 // jump
 static const int32_t CODE_SPACE = 0x2C;
-// crouch
+// crouch does it has a key? what about modifier
 static const int32_t CODE_LSHIFT = 0x12;
 typedef struct {
     uint32_t code;
@@ -110,9 +112,10 @@ typedef struct {
     float z;
 } StateAngularVelocity;
 
-static inline void init_state_rotate(StateAngularVelocity *rotate) {
+static inline void init_state_acc(StateAngularVelocity *rotate) {
     bzero(rotate, sizeof(StateAngularVelocity));
 }
+
 static const float ROTATION_THRESHOLD = 0.1f;
 typedef struct {
     float x;
@@ -135,12 +138,12 @@ typedef struct {
 static inline void init_state(State *state) {
     init_state_input_button(&state->input_btn);
     init_state_input_joystick(&state->input_joystick);
-    init_state_rotate(&state->angular_velocity);
+    init_state_acc(&state->angular_velocity);
     init_state_rotation(&state->rotation);
     init_state_output(&state->output);
 }
 
-static inline void apply_state(State *state) {
+static inline void update_state(State *state) {
     init_state_output(&state->output);
     // mouse
     if (state->input_btn.trigger.pressed) {
