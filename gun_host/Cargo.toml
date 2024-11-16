@@ -1,0 +1,9 @@
+[package]
+name = "gun-host"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serialport = "4.6.0"
+enigo = "0.2.1"
+eyre = "0.6"
