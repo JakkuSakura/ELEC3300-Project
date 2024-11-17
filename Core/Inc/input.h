@@ -28,21 +28,18 @@ static inline void read_buttons(StateInputButton *state) {
 #define CTL_MOVE_Y GPIOA, GPIO_PIN_4
 
 static inline void init_joystick_offset(StateInputJoystick *state) {
-    state->y_offset = (int32_t)HAL_ADC_GetValue(&hadc1);
-    state->x_offset = (int32_t)HAL_ADC_GetValue(&hadc2);
+    state->y_offset = (int32_t) HAL_ADC_GetValue(&hadc1);
+    state->x_offset = (int32_t) HAL_ADC_GetValue(&hadc2);
 
 }
 
 static inline void read_joystick(StateInputJoystick *state) {
-    state->y = (int32_t)HAL_ADC_GetValue(&hadc1) - state->y_offset;
-    state->x = (int32_t)HAL_ADC_GetValue(&hadc2) - state->x_offset;
+    state->y = (int32_t) HAL_ADC_GetValue(&hadc1) - state->y_offset;
+    state->x = (int32_t) HAL_ADC_GetValue(&hadc2) - state->x_offset;
 
 }
 
-static inline void read_into_state(State *state) {
-    read_buttons(&state->input_btn);
-    read_joystick(&state->input_joystick);
-
+static inline void read_jy60(State *state) {
     static uint8_t buffer[64];
     uint16_t len = 0;
     HAL_UARTEx_ReceiveToIdle(&huart3, buffer, sizeof(buffer), &len, 10);
@@ -50,4 +47,12 @@ static inline void read_into_state(State *state) {
     if (len > 1) {
         parse_jy60(buffer, len, &state->rotation, &state->angular_velocity);
     }
+}
+
+
+static inline void read_into_state(State *state) {
+    read_buttons(&state->input_btn);
+    read_joystick(&state->input_joystick);
+    read_jy60(state);
+
 }
