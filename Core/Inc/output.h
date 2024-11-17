@@ -22,22 +22,22 @@ void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *ke
 }
 
 void generate_output_from_state(StateOutput *state) {
-    write_mouse(state->mouse.status & (1 << 0), state->mouse & (1 << 1), state->mouse.speed_x, state->mouse.speed_y);
+    write_mouse(state->mouse.status & (1 << 0), state->mouse.status & (1 << 1), state->mouse.speed_x, state->mouse.speed_y);
     uint16_t keys[6] = {};
     int len = 0;
-    if (state->keyboard.forward) {
+    if (state->keyboard.forward.pressed) {
         keys[len++] = CODE_W;
     }
-    if (state->keyboard.left) {
+    if (state->keyboard.left.pressed) {
         keys[len++] = CODE_A;
     }
-    if (state->keyboard.backward) {
+    if (state->keyboard.backward.pressed) {
         keys[len++] = CODE_S;
     }
-    if (state->keyboard.right) {
+    if (state->keyboard.right.pressed) {
         keys[len++] = CODE_D;
     }
-    if (state->keyboard.jump) {
+    if (state->keyboard.jump.pressed) {
         keys[len++] = CODE_SPACE;
     }
 //    if (state->keyboard.crouch) {
@@ -45,7 +45,7 @@ void generate_output_from_state(StateOutput *state) {
 //    }
 
 
-    write_keyboard(0, state->keyboard.crouch, 0,
+    write_keyboard(0, state->keyboard.crouch.pressed, 0,
                    keys,
                    len);
 }

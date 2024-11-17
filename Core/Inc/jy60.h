@@ -47,23 +47,21 @@ float get_angle(uint8_t RollH, uint8_t RollL) {
 
 //用串口2给JY模块发送指令
 void sendcmd(char cmd[]) {
-    char i;
-    for (i = 0; i < 3; i++)
-        UART2_Put_Char(cmd[i]);
+    HAL_UART_Transmit(&huart3, (uint8_t *) cmd, 3, 1000);
 }
 
 void init_jy60() {
     printf("正在进行加速度校准\r\n");
     sendcmd(ACCCMD);//等待模块内部自动校准好，模块内部会自动计算需要一定的时间
     printf("加速度校准完成\r\n");
-    delay_ms(100);
+    HAL_Delay(100);
     printf("进行Z轴角度清零\r\n");
     sendcmd(YAWCMD);
     printf("Z轴角度清零完成\r\n");
 }
 
 
-static inline void parse_jy60(uint8_t *data, uint16_t len) {
+static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotation, StateAngularVelocity *ang_vec) {
 
     // ucRxBuffer[ucRxCnt++]=ucData;	//将收到的数据存入缓冲区中
     //	if (ucRxBuffer[0]!=0x55) //数据头不对，则重新开始寻找0x55数据头

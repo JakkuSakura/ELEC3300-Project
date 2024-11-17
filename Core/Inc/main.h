@@ -59,6 +59,8 @@ void toggle_screen();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Test_Pin GPIO_PIN_6
+#define Test_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

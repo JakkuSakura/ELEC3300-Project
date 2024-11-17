@@ -12,6 +12,8 @@ typedef struct {
 typedef struct {
     StateButton trigger;
     StateButton aim;
+    StateButton jump;
+    StateButton switch_;
     StateButton reload;
     StateButton continuous;
     StateButton crouch;
@@ -22,18 +24,22 @@ static inline void init_state_input_button(StateInputButton *input) {
     strcpy(input->trigger.name, "trigger");
     strcpy(input->aim.name, "aim");
     strcpy(input->reload.name, "reload");
+    strcpy(input->jump.name, "jump");
+    strcpy(input->switch_.name, "switch");
     strcpy(input->continuous.name, "continuous");
     strcpy(input->crouch.name, "crouch");
 }
 
 // joystick
-static const int8_t JOYSTICK_THRESHOLD = 10;
+static const int8_t JOYSTICK_THRESHOLD = 200;
 typedef struct {
-    int8_t x;
-    int8_t y;
+	int32_t x;
+	int32_t x_offset;
+	int32_t y;
+	int32_t y_offset;
 } StateInputJoystick;
 
-inline void init_state_input_joystick(StateInputJoystick *joystick) {
+static inline void init_state_input_joystick(StateInputJoystick *joystick) {
     bzero(joystick, sizeof(StateInputJoystick));
 }
 // https://deskthority.net/wiki/Scancode
@@ -123,7 +129,7 @@ typedef struct {
     float z;
 } StateRotation;
 
-inline void init_state_rotation(StateRotation *rotation) {
+static inline void init_state_rotation(StateRotation *rotation) {
     bzero(rotation, sizeof(StateRotation));
 }
 
