@@ -47,7 +47,7 @@ static inline void read_jy60(State *state) {
     uint16_t len = 0;
     HAL_UARTEx_ReceiveToIdle(&huart3, buffer, sizeof(buffer), &len, 10);
     // string in C ends with \0?
-    if (len > 0) {
+    if (len > 1) {
         parse_jy60(buffer, len, &state->rotation, &state->rotation_offset, &state->angular_velocity);
     }
 }

@@ -112,17 +112,17 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
             StateRotation rot_temp;
 
             rot_temp.roll = get_angle(pitchH, pitchL) - rotation_offset->roll;
-            if (fabs(rot_temp.roll - rotation->roll) < 40.0f) {
+//            if (fabs(rot_temp.roll - rotation->roll) < 100040.0f) {
                 rotation->roll = rot_temp.roll;
-            }
+//            }
             rot_temp.pitch = -get_angle(rollH, rollL) - rotation_offset->pitch;
-            if (fabs(rot_temp.pitch - rotation->pitch) < 40.0f) {
+//            if (fabs(rot_temp.pitch - rotation->pitch) < 100040.0f) {
                 rotation->pitch = rot_temp.pitch;
-            }
+//            }
             rot_temp.yaw = get_angle(yawH, yawL) - rotation_offset->yaw;
-            if (fabs(rot_temp.yaw - rotation->yaw) < 40.0f) {
+//            if (fabs(rot_temp.yaw - rotation->yaw) < 100040.0f) {
                 rotation->yaw = rot_temp.yaw;
-            }
+//            }
             rotation->temp = get_temperature(tempH, tempL);
             break;
         }
@@ -149,7 +149,7 @@ static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotati
 
     // Process packets
     for (uint8_t i = 0; i <= index - BUFFER_SIZE;) {
-        if (buffer[i] == 0x55) {
+        if (buffer[i] == 0x55 && (buffer[i + 1] == 0x51 || buffer[i + 1] == 0x52 || buffer[i + 1] == 0x53)) {
             // Found a start of a packet
             if (i + BUFFER_SIZE <= index) {
                 // Process the complete packet
