@@ -83,6 +83,7 @@ void toggle_screen();
 #define USB_COMA10_GPIO_Port GPIOA
 #define Reload_Pin GPIO_PIN_3
 #define Reload_GPIO_Port GPIOD
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
