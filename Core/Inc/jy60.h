@@ -1,19 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <math.h>
 
-struct SAcc {
-    short a[3];
-    short T;
-};
-struct SGyro {
-    short w[3];
-    short T;
-};
-struct SAngle {
-    short Angle[3];
-    short T;
-};
 
 char YAWCMD[3] = {0XFF, 0XAA, 0X52};
 char ACCCMD[3] = {0XFF, 0XAA, 0X67};
@@ -48,28 +37,41 @@ static inline float get_angle(uint8_t H, uint8_t L) {
     return value_signed / 32768.0f * 180.0f;
 }
 
+static inline float get_temperature(uint8_t H, uint8_t L) {
+    int16_t value_signed = (((uint16_t) H << 8) | (uint16_t) L);
+    return value_signed / 340.0f + 36.53f;
+}
+
 //用串口2给JY模块发送指令
 static inline void sendcmd(char cmd[]) {
     HAL_UART_Transmit(&huart3, (uint8_t *) cmd, 3, 1000);
 }
 
 static inline void init_jy60() {
+// vertical install
+    sendcmd(IICMODECMD);
 //    printf("正在进行加速度校准\r\n");
-    sendcmd(ACCCMD);//等待模块内部自动校准好，模块内部会自动计算需要一定的时间
+//    sendcmd(ACCCMD);//等待模块内部自动校准好，模块内部会自动计算需要一定的时间
 //    printf("加速度校准完成\r\n");
-    HAL_Delay(100);
+//    HAL_Delay(100);
 //    printf("进行Z轴角度清零\r\n");
     sendcmd(YAWCMD);
+    HAL_Delay(100);
 //    printf("Z轴角度清零完成\r\n");
-    // vertical install
-    sendcmd(IICMODECMD);
 }
 
-static inline void process_packet(uint8_t *packet, StateRotation *rotation, StateAngularVelocity *ang_vec) {
+static inline void process_packet(uint8_t *packet, StateRotation *rotation, StateRotation *rotation_offset,
+                                  StateAngularVelocity *ang_vec) {
     uint8_t type = packet[1];
     switch (type) {
         case 0x51: {
             // acceleration
+            uint8_t sum = packet[10];
+            uint8_t computed_sum = 0;
+            for (int i = 0; i < 10; ++i)
+                computed_sum += packet[i];
+            if (computed_sum != sum)
+                break;
             break;
         }
         case 0x52: {
@@ -80,6 +82,12 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
             uint8_t wyH = packet[5];
             uint8_t wzL = packet[6];
             uint8_t wzH = packet[7];
+            uint8_t sum = packet[10];
+            uint8_t computed_sum = 0;
+            for (int i = 0; i < 10; ++i)
+                computed_sum += packet[i];
+            if (computed_sum != sum)
+                break;
             ang_vec->roll = get_angular_velocity(wyH, wyL);
             ang_vec->pitch = -get_angular_velocity(wxH, wxL);
             ang_vec->yaw = get_angular_velocity(wzH, wzL);
@@ -93,10 +101,29 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
             uint8_t pitchH = packet[5];
             uint8_t yawL = packet[6];
             uint8_t yawH = packet[7];
-            rotation->roll = get_angle(pitchH, pitchL);
-            rotation->pitch = -get_angle(rollH, rollL);
-            rotation->yaw = get_angle(yawH, yawL);
+            uint8_t tempL = packet[8];
+            uint8_t tempH = packet[9];
+            uint8_t sum = packet[10];
+            uint8_t computed_sum = 0;
+            for (int i = 0; i < 10; ++i)
+                computed_sum += packet[i];
+//            if (computed_sum != sum)
+//            	break;
+            StateRotation rot_temp;
 
+            rot_temp.roll = get_angle(pitchH, pitchL) - rotation_offset->roll;
+            if (fabs(rot_temp.roll - rotation->roll) < 40.0f) {
+                rotation->roll = rot_temp.roll;
+            }
+            rot_temp.pitch = -get_angle(rollH, rollL) - rotation_offset->pitch;
+            if (fabs(rot_temp.pitch - rotation->pitch) < 40.0f) {
+                rotation->pitch = rot_temp.pitch;
+            }
+            rot_temp.yaw = get_angle(yawH, yawL) - rotation_offset->yaw;
+            if (fabs(rot_temp.yaw - rotation->yaw) < 40.0f) {
+                rotation->yaw = rot_temp.yaw;
+            }
+            rotation->temp = get_temperature(tempH, tempL);
             break;
         }
     }
@@ -106,7 +133,8 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
 #define MAX_READ_SIZE 32 // Maximum bytes you can read at once
 #define TOTAL_BUFFER_SIZE 256
 
-static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotation, StateAngularVelocity *ang_vec) {
+static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotation, StateRotation *rotation_offset,
+                              StateAngularVelocity *ang_vec) {
     static uint8_t buffer[TOTAL_BUFFER_SIZE];
     static uint8_t index = 0;
     // Append new data to the buffer if there's enough space
@@ -125,7 +153,7 @@ static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotati
             // Found a start of a packet
             if (i + BUFFER_SIZE <= index) {
                 // Process the complete packet
-                process_packet(&buffer[i], rotation, ang_vec);
+                process_packet(&buffer[i], rotation, rotation_offset, ang_vec);
                 i += BUFFER_SIZE;
             } else {
                 memmove(&buffer[0], &buffer[i], index - i);

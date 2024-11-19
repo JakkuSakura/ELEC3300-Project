@@ -1,4 +1,6 @@
-use crate::command::keyboard::{handle_command_keyboard, CommandKeyboard, CommandKeyboardState};
+use crate::command::keyboard::{
+    handle_command_keyboard, parse_command_keyboard, CommandKeyboard, CommandKeyboardState,
+};
 use crate::command::mouse::{handle_command_mouse, parse_command_mouse, CommandMouse};
 use enigo::Direction;
 use eyre::Result;
@@ -21,7 +23,7 @@ pub fn parse_command(s: &str) -> Option<Command> {
     let command = s.split_whitespace().next()?;
     match command {
         "Mouse" => parse_command_mouse(s).map(Command::Mouse),
-        "Keyboard" => keyboard::parse_command_keyboard(s).map(Command::Keyboard),
+        "Keyboard" => parse_command_keyboard(s).map(Command::Keyboard),
         _ => None,
     }
 }

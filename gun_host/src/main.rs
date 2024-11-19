@@ -30,6 +30,9 @@ fn main() -> Result<()> {
         if n == 0 {
             break;
         }
+        if buf.trim_ascii().is_empty() {
+            continue;
+        }
 
         let s = String::from_utf8_lossy(&buf);
         println!("> {}", s);

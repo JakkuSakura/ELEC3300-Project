@@ -17,7 +17,11 @@ void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *ke
     for (uint8_t i = 0; i < len; i++) {
         length += sprintf(buffer + length, "%u ", keys[i]);
     }
-    length += sprintf(buffer, "\r\n");
+    for (uint8_t i = 0; i < 6 - len; i++) {
+		length += sprintf(buffer + length, "%u ", 0);
+	}
+
+    length += sprintf(buffer + length, "\r\n");
     HAL_UART_Transmit(&huart1, (uint8_t *) buffer, strlen(buffer), 1000);
 }
 
@@ -40,12 +44,16 @@ void generate_output_from_state(StateOutput *state) {
     if (state->keyboard.jump.pressed) {
         keys[len++] = CODE_SPACE;
     }
+    if (state->keyboard.reload.pressed) {
+		keys[len++] = CODE_R;
+	}
+
 //    if (state->keyboard.crouch) {
 //        keys[len++] = CODE_LSHIFT;
 //    }
 
 
-    write_keyboard(0, state->keyboard.crouch.pressed, 0,
+    write_keyboard(state->keyboard.crouch.pressed, 0, 0,
                    keys,
                    len);
 }

@@ -31,12 +31,10 @@ static inline void init_state_input_button(StateInputButton *input) {
 }
 
 // joystick
-static const int8_t JOYSTICK_THRESHOLD = 200;
+static const int16_t JOYSTICK_THRESHOLD = 500;
 typedef struct {
     int32_t x;
-    int32_t x_offset;
     int32_t y;
-    int32_t y_offset;
 } StateInputJoystick;
 
 static inline void init_state_input_joystick(StateInputJoystick *joystick) {
@@ -111,7 +109,7 @@ static inline void init_state_output(StateOutput *output) {
     init_output_mouse(&output->mouse);
 }
 
-static const float ACCELERATION_VELOCITY_THRESHOLD = 0.1f;
+static const float ACCELERATION_VELOCITY_THRESHOLD = 100.0f;
 typedef struct {
     float roll;
     float pitch;
@@ -122,11 +120,12 @@ static inline void init_state_acc(StateAngularVelocity *rotate) {
     bzero(rotate, sizeof(StateAngularVelocity));
 }
 
-static const float ROTATION_THRESHOLD = 0.1f;
+static const float ROTATION_THRESHOLD = 5.0f;
 typedef struct {
     float roll;
     float pitch;
     float yaw;
+    float temp;
 } StateRotation;
 
 static inline void init_state_rotation(StateRotation *rotation) {
@@ -136,14 +135,17 @@ static inline void init_state_rotation(StateRotation *rotation) {
 typedef struct {
     StateInputButton input_btn;
     StateInputJoystick input_joystick;
+    StateInputJoystick input_joystick_offset;
     StateAngularVelocity angular_velocity;
     StateRotation rotation;
+    StateRotation rotation_offset;
     StateOutput output;
 } State;
 
 static inline void init_state(State *state) {
     init_state_input_button(&state->input_btn);
     init_state_input_joystick(&state->input_joystick);
+    init_state_input_joystick(&state->input_joystick_offset);
     init_state_acc(&state->angular_velocity);
     init_state_rotation(&state->rotation);
     init_state_output(&state->output);
@@ -162,39 +164,50 @@ static inline void update_state(State *state) {
     if (state->input_btn.reload.pressed) {
         state->output.keyboard.reload.pressed = 1;
     }
-    if (state->input_btn.trigger.pressed) {
+    if (state->input_btn.jump.pressed) {
+		state->output.keyboard.jump.pressed = 1;
+	}
+
+    if (state->input_joystick.y > JOYSTICK_THRESHOLD) {
         state->output.keyboard.forward.pressed = 1;
-    }
-    if (state->input_joystick.x > JOYSTICK_THRESHOLD) {
-        state->output.keyboard.forward.pressed = 1;
-    } else if (state->input_joystick.x < -JOYSTICK_THRESHOLD) {
+    } else if (state->input_joystick.y < -JOYSTICK_THRESHOLD) {
         state->output.keyboard.backward.pressed = 1;
     }
-    if (state->input_joystick.y > JOYSTICK_THRESHOLD) {
+    if (state->input_joystick.x > JOYSTICK_THRESHOLD) {
         state->output.keyboard.right.pressed = 1;
-    } else if (state->input_joystick.y < -JOYSTICK_THRESHOLD) {
+    } else if (state->input_joystick.x < -JOYSTICK_THRESHOLD) {
         state->output.keyboard.left.pressed = 1;
     }
 
     // movement is handled by angular velocity
-
     if (state->input_btn.continuous.pressed) {
-        if (state->rotation.roll > ROTATION_THRESHOLD) {
-            state->output.mouse.speed_y = MOUSE_SPEED;
-        } else if (state->rotation.roll < -ROTATION_THRESHOLD) {
-            state->output.mouse.speed_y = (int8_t) -MOUSE_SPEED;
-        } else {
-            state->output.mouse.speed_y = 0;
-        }
-        if (state->rotation.pitch > ROTATION_THRESHOLD) {
+        state->input_btn.continuous.reacted = 1;
+        state->rotation_offset = state->rotation;
+    }
+    if (1 || state->input_btn.continuous.pressed) {
+//        if (!state->input_btn.continuous.reacted) {
+//            state->input_btn.continuous.reacted = 1;
+//            state->rotation_offset = state->rotation;
+//        }
+        float roll_offset = state->rotation.roll;
+        if (roll_offset > ROTATION_THRESHOLD) {
             state->output.mouse.speed_x = MOUSE_SPEED;
-        } else if (state->rotation.pitch < -ROTATION_THRESHOLD) {
+        } else if (roll_offset < -ROTATION_THRESHOLD) {
             state->output.mouse.speed_x = (int8_t) -MOUSE_SPEED;
         } else {
             state->output.mouse.speed_x = 0;
         }
+        float pitch_offset = state->rotation.pitch;
+        if (pitch_offset > ROTATION_THRESHOLD) {
+            state->output.mouse.speed_y = MOUSE_SPEED;
+        } else if (pitch_offset < -ROTATION_THRESHOLD) {
+            state->output.mouse.speed_y = (int8_t) -MOUSE_SPEED;
+        } else {
+            state->output.mouse.speed_y = 0;
+        }
 
     } else {
+        state->input_btn.continuous.reacted = 0;
         if (state->angular_velocity.roll > ACCELERATION_VELOCITY_THRESHOLD) {
             state->output.mouse.speed_x = MOUSE_SPEED;
         } else if (state->angular_velocity.roll < -ACCELERATION_VELOCITY_THRESHOLD) {

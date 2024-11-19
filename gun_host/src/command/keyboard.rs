@@ -42,7 +42,7 @@ pub const CODE_SPACE: u32 = 0x2C;
 // crouch
 pub const CODE_LSHIFT: u32 = 0x12;
 fn map_scancode_to_key(scan_code: u32) -> Option<enigo::Key> {
-    if true {
+    if false {
         Some(enigo::Key::Other(scan_code))
     } else {
         match scan_code {
@@ -52,8 +52,7 @@ fn map_scancode_to_key(scan_code: u32) -> Option<enigo::Key> {
             CODE_S => Some(enigo::Key::Unicode('s')),
             CODE_D => Some(enigo::Key::Unicode('d')),
             CODE_SPACE => Some(enigo::Key::Space),
-            CODE_LSHIFT => Some(enigo::Key::Shift),
-            _ => None,
+            _ => Some(enigo::Key::Other(scan_code)),
         }
     }
 }
@@ -73,6 +72,9 @@ impl CommandKeyboardState {
             self.pressed[self.len] = key;
             self.len += 1;
         }
+    }
+    pub fn iter(&self) -> impl Iterator<Item = u32> + '_ {
+        self.pressed[..self.len].iter().copied().filter(|x| *x != 0)
     }
     pub fn contains(&self, key: &u32) -> bool {
         self.pressed[..self.len].iter().any(|&x| x == *key)
@@ -97,19 +99,20 @@ pub fn handle_command_keyboard(
         if key == 0 {
             continue;
         }
-
-        keyboard.key(
-            map_scancode_to_key(key).context("Invalid key")?,
-            enigo::Direction::Press,
-        )?;
+        let Some(key1) = map_scancode_to_key(key) else {
+            println!("Invalid key: {}", key);
+            continue;
+        };
+        keyboard.key(key1, enigo::Direction::Press)?;
         new_pressed.insert(key);
     }
-    for &key in state.pressed.iter() {
+    for key in state.iter() {
         if !new_pressed.contains(&key) {
-            keyboard.key(
-                map_scancode_to_key(key).context("Invalid key")?,
-                enigo::Direction::Release,
-            )?;
+            let Some(key1) = map_scancode_to_key(key) else {
+                println!("Invalid key: {}", key);
+                continue;
+            };
+            keyboard.key(key1, enigo::Direction::Release)?;
         }
     }
     *state = new_pressed;
