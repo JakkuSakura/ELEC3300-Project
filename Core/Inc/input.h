@@ -4,13 +4,13 @@
 #include "state.h"
 #include "stm32f1xx_it.h"
 
-#define BTN_TRIGGER GPIOA, GPIO_PIN_6
+#define BTN_TRIGGER GPIOC, GPIO_PIN_2
 //#define BTN_AIM GPIOC, GPIO_PIN_1
-#define BTN_SWITCH GPIOC, GPIO_PIN_1
-#define BTN_JUMP GPIOC, GPIO_PIN_1
-#define BTN_RELOAD GPIOC, GPIO_PIN_13
-#define BTN_CONTINOUS GPIOC, GPIO_PIN_13
-#define BTN_CROUCH GPIOC, GPIO_PIN_14
+#define BTN_SWITCH GPIOA, GPIO_PIN_2
+#define BTN_JUMP GPIOA, GPIO_PIN_8
+#define BTN_RELOAD GPIOD, GPIO_PIN_3
+#define BTN_CONTINOUS GPIOC, GPIO_PIN_3
+#define BTN_CROUCH GPIOC, GPIO_PIN_4
 
 static inline void read_buttons(StateInputButton *state) {
 //    state->aim.pressed = read_btn_aim();

@@ -33,16 +33,19 @@ static inline float get_acceleration(uint8_t AxH, uint8_t AxL) {
 // wy =((wyH<<8)|wyL)/32768*2000(°/s)
 // wz=((wzH<<8)|wzL)/32768*2000(°/s)
 
-static inline float get_angular_velocity(uint8_t wxH, uint8_t wxL) {
-    return ((((int16_t) wxH << 8) | (int16_t) wxL) / 32768 * 2000);
+static inline float get_angular_velocity(uint8_t H, uint8_t L) {
+    int16_t value_signed = (((uint16_t) H << 8) | (uint16_t) L);
+
+    return value_signed / 32768.0f * 2000.0f;
 }
 
 // 滚转角（x 轴）Roll=((RollH<<8)|RollL)/32768*180(°)
 // 俯仰角（y 轴）Pitch=((PitchH<<8)|PitchL)/32768*180(°)
 // 偏航角（z 轴）Yaw=((YawH<<8)|YawL)/32768*180(°)
 
-static inline float get_angle(uint8_t RollH, uint8_t RollL) {
-    return (((int16_t) RollH << 8) | (int16_t) RollL) / 32768 * 180.0;
+static inline float get_angle(uint8_t H, uint8_t L) {
+    int16_t value_signed = (((uint16_t) H << 8) | (uint16_t) L);
+    return value_signed / 32768.0f * 180.0f;
 }
 
 //用串口2给JY模块发送指令
@@ -77,9 +80,9 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
             uint8_t wyH = packet[5];
             uint8_t wzL = packet[6];
             uint8_t wzH = packet[7];
-            ang_vec->x = get_angular_velocity(wxH, wxL);
-            ang_vec->y = get_angular_velocity(wyH, wyL);
-            ang_vec->z = get_angular_velocity(wzH, wzL);
+            ang_vec->roll = get_angular_velocity(wyH, wyL);
+            ang_vec->pitch = -get_angular_velocity(wxH, wxL);
+            ang_vec->yaw = get_angular_velocity(wzH, wzL);
             break;
         }
         case 0x53: {
@@ -90,9 +93,9 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
             uint8_t pitchH = packet[5];
             uint8_t yawL = packet[6];
             uint8_t yawH = packet[7];
-            rotation->x = get_angle(rollH, rollL);
-            rotation->y = get_angle(pitchH, pitchL);
-            rotation->z = get_angle(yawH, yawL);
+            rotation->roll = get_angle(pitchH, pitchL);
+            rotation->pitch = -get_angle(rollH, rollL);
+            rotation->yaw = get_angle(yawH, yawL);
 
             break;
         }
@@ -101,7 +104,7 @@ static inline void process_packet(uint8_t *packet, StateRotation *rotation, Stat
 
 #define BUFFER_SIZE 11
 #define MAX_READ_SIZE 32 // Maximum bytes you can read at once
-#define TOTAL_BUFFER_SIZE (BUFFER_SIZE + MAX_READ_SIZE)
+#define TOTAL_BUFFER_SIZE 256
 
 static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotation, StateAngularVelocity *ang_vec) {
     static uint8_t buffer[TOTAL_BUFFER_SIZE];
@@ -129,6 +132,8 @@ static inline void parse_jy60(uint8_t *data, uint16_t len, StateRotation *rotati
                 index -= i;
                 break;
             }
+        } else {
+            i += 1;
         }
     }
 }

@@ -218,25 +218,6 @@ void EXTI0_IRQHandler(void)
   /* USER CODE END EXTI0_IRQn 1 */
 }
 
-/**
-  * @brief This function handles EXTI line[15:10] interrupts.
-  */
-void EXTI15_10_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-	if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_13) != 0x00u) {
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
-		HAL_GPIO_EXTI_Callback(GPIO_PIN_13);
-		return;
-
-	}
-  /* USER CODE END EXTI15_10_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
-  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
-
-  /* USER CODE END EXTI15_10_IRQn 1 */
-}
-
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

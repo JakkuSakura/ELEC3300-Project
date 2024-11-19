@@ -33,10 +33,10 @@ static inline void init_state_input_button(StateInputButton *input) {
 // joystick
 static const int8_t JOYSTICK_THRESHOLD = 200;
 typedef struct {
-	int32_t x;
-	int32_t x_offset;
-	int32_t y;
-	int32_t y_offset;
+    int32_t x;
+    int32_t x_offset;
+    int32_t y;
+    int32_t y_offset;
 } StateInputJoystick;
 
 static inline void init_state_input_joystick(StateInputJoystick *joystick) {
@@ -113,9 +113,9 @@ static inline void init_state_output(StateOutput *output) {
 
 static const float ACCELERATION_VELOCITY_THRESHOLD = 0.1f;
 typedef struct {
-    float x;
-    float y;
-    float z;
+    float roll;
+    float pitch;
+    float yaw;
 } StateAngularVelocity;
 
 static inline void init_state_acc(StateAngularVelocity *rotate) {
@@ -124,9 +124,9 @@ static inline void init_state_acc(StateAngularVelocity *rotate) {
 
 static const float ROTATION_THRESHOLD = 0.1f;
 typedef struct {
-    float x;
-    float y;
-    float z;
+    float roll;
+    float pitch;
+    float yaw;
 } StateRotation;
 
 static inline void init_state_rotation(StateRotation *rotation) {
@@ -179,33 +179,33 @@ static inline void update_state(State *state) {
     // movement is handled by angular velocity
 
     if (state->input_btn.continuous.pressed) {
-        if (state->rotation.x > ROTATION_THRESHOLD) {
+        if (state->rotation.roll > ROTATION_THRESHOLD) {
             state->output.mouse.speed_y = MOUSE_SPEED;
-        } else if (state->rotation.x < -ROTATION_THRESHOLD) {
+        } else if (state->rotation.roll < -ROTATION_THRESHOLD) {
             state->output.mouse.speed_y = (int8_t) -MOUSE_SPEED;
         } else {
             state->output.mouse.speed_y = 0;
         }
-        if (state->rotation.y > ROTATION_THRESHOLD) {
+        if (state->rotation.pitch > ROTATION_THRESHOLD) {
             state->output.mouse.speed_x = MOUSE_SPEED;
-        } else if (state->rotation.y < -ROTATION_THRESHOLD) {
+        } else if (state->rotation.pitch < -ROTATION_THRESHOLD) {
             state->output.mouse.speed_x = (int8_t) -MOUSE_SPEED;
         } else {
             state->output.mouse.speed_x = 0;
         }
 
     } else {
-        if (state->angular_velocity.x > ACCELERATION_VELOCITY_THRESHOLD) {
+        if (state->angular_velocity.roll > ACCELERATION_VELOCITY_THRESHOLD) {
             state->output.mouse.speed_x = MOUSE_SPEED;
-        } else if (state->angular_velocity.x < -ACCELERATION_VELOCITY_THRESHOLD) {
+        } else if (state->angular_velocity.roll < -ACCELERATION_VELOCITY_THRESHOLD) {
             state->output.mouse.speed_x = (int8_t) -MOUSE_SPEED;
         } else {
             state->output.mouse.speed_x = 0;
         }
 
-        if (state->angular_velocity.y > ACCELERATION_VELOCITY_THRESHOLD) {
+        if (state->angular_velocity.pitch > ACCELERATION_VELOCITY_THRESHOLD) {
             state->output.mouse.speed_y = MOUSE_SPEED;
-        } else if (state->angular_velocity.y < -ACCELERATION_VELOCITY_THRESHOLD) {
+        } else if (state->angular_velocity.pitch < -ACCELERATION_VELOCITY_THRESHOLD) {
             state->output.mouse.speed_y = (int8_t) -MOUSE_SPEED;
         } else {
             state->output.mouse.speed_y = 0;

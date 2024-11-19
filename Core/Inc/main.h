@@ -59,8 +59,30 @@ void toggle_screen();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Test_Pin GPIO_PIN_6
-#define Test_GPIO_Port GPIOA
+#define Trigger_Pin GPIO_PIN_2
+#define Trigger_GPIO_Port GPIOC
+#define Continous_Pin GPIO_PIN_3
+#define Continous_GPIO_Port GPIOC
+#define Switch1_Pin GPIO_PIN_2
+#define Switch1_GPIO_Port GPIOA
+#define Controller_Y_Pin GPIO_PIN_4
+#define Controller_Y_GPIO_Port GPIOA
+#define Controller_X_Pin GPIO_PIN_5
+#define Controller_X_GPIO_Port GPIOA
+#define Crouch_Pin GPIO_PIN_4
+#define Crouch_GPIO_Port GPIOC
+#define JY60_RX_Pin GPIO_PIN_10
+#define JY60_RX_GPIO_Port GPIOB
+#define JY60_TX_Pin GPIO_PIN_11
+#define JY60_TX_GPIO_Port GPIOB
+#define Jump1_Pin GPIO_PIN_8
+#define Jump1_GPIO_Port GPIOA
+#define USB_COM_Pin GPIO_PIN_9
+#define USB_COM_GPIO_Port GPIOA
+#define USB_COMA10_Pin GPIO_PIN_10
+#define USB_COMA10_GPIO_Port GPIOA
+#define Reload_Pin GPIO_PIN_3
+#define Reload_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
