@@ -1,6 +1,5 @@
 use crate::command::to_direction;
 use enigo::Keyboard;
-use eyre::ContextCompat;
 use std::str::FromStr;
 
 pub struct CommandKeyboard {
