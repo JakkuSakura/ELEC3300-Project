@@ -4,57 +4,44 @@
 #include "usart.h"
 #include "state.h"
 
-void write_mouse(uint8_t left, uint8_t right, int8_t x, int8_t y) {
+void write_mouse(OutputMouse *mouse) {
     static char buffer[64];
-    int length = sprintf(buffer, "M %d %d %d %d\r\n", left, right, x, y);
+    int length = sprintf(buffer, "M %d %d %d %d                         \r\n", mouse->left, mouse->right,
+                         mouse->speed_x,
+                         mouse->speed_y);
     HAL_UART_Transmit(&huart1, (uint8_t *) buffer, length, 1000);
 }
 
-void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *keys, uint8_t len) {
+void write_keyboard(
+        OutputKeyboard *keyboard
+) {
     static char buffer[128];
     int length = 0;
-    length += sprintf(buffer + length, "Keyboard %d %d %d ", ctrl, shift, alt);
-    for (uint8_t i = 0; i < len; i++) {
-        length += sprintf(buffer + length, "%u ", keys[i]);
-    }
-    for (uint8_t i = 0; i < 6 - len; i++) {
-        length += sprintf(buffer + length, "%u ", 0);
-    }
+
+    int ctrl = keyboard->crouch.pressed;
+    int shift = 0;
+    int alt = 0;
+    length += sprintf(buffer + length, "K %d %d %d ", ctrl, shift, alt);
+
+
+#define PRESS(key, code) if (keyboard->key.pressed) { length += sprintf(buffer + length, "%u ", code); }
+    PRESS(forward, CODE_W)
+    PRESS(left, CODE_A)
+    PRESS(backward, CODE_S)
+    PRESS(right, CODE_D)
+    PRESS(jump, CODE_SPACE)
+    PRESS(reload, CODE_R)
+#undef PRESS
+
 
     length += sprintf(buffer + length, "\r\n");
     HAL_UART_Transmit(&huart1, (uint8_t *) buffer, length, 1000);
 }
 
 void generate_output_from_state(StateOutput *state) {
-    write_mouse(state->mouse.left, state->mouse.right, state->mouse.speed_x, state->mouse.speed_y);
-    uint16_t keys[6] = {};
-    int len = 0;
-    if (state->keyboard.forward.pressed) {
-        keys[len++] = CODE_W;
+    write_mouse(&state->mouse);
+    if (memcmp(&state->keyboard, &state->keyboard_prev, sizeof(OutputKeyboard)) != 0) {
+        write_keyboard(&state->keyboard);
+        state->keyboard_prev = state->keyboard;
     }
-    if (state->keyboard.left.pressed) {
-        keys[len++] = CODE_A;
-    }
-    if (state->keyboard.backward.pressed) {
-        keys[len++] = CODE_S;
-    }
-    if (state->keyboard.right.pressed) {
-        keys[len++] = CODE_D;
-    }
-    if (state->keyboard.jump.pressed) {
-        keys[len++] = CODE_SPACE;
-    }
-    if (state->keyboard.reload.pressed) {
-        keys[len++] = CODE_R;
-    }
-
-
-//    if (state->keyboard.crouch) {
-//        keys[len++] = CODE_LSHIFT;
-//    }
-
-
-    write_keyboard(state->keyboard.crouch.pressed, 0, 0,
-                   keys,
-                   len);
 }

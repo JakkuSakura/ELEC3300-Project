@@ -25,7 +25,7 @@ pub fn parse_command(s: &str) -> Option<Command> {
     let command = s.split_whitespace().next()?;
     match command {
         "M" => parse_command_mouse(s).map(Command::Mouse),
-        "Keyboard" => parse_command_keyboard(s).map(Command::Keyboard),
+        "K" => parse_command_keyboard(s).map(Command::Keyboard),
         _ => None,
     }
 }

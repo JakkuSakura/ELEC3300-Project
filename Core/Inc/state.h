@@ -87,6 +87,7 @@ static inline void init_output_mouse(OutputMouse *output) {
 
 typedef struct {
     OutputKeyboard keyboard;
+    OutputKeyboard keyboard_prev;
     OutputMouse mouse;
 } StateOutput;
 

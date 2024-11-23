@@ -120,7 +120,7 @@ int main(void)
         update_state(&state);
 
         generate_output_from_state(&state.output);
-        HAL_Delay(5);
+         HAL_Delay(2);
     }
   /* USER CODE END 3 */
 }
