@@ -27,7 +27,7 @@ pub struct CommandMouse {
 pub fn parse_command_mouse(s: &str) -> Option<CommandMouse> {
     let mut parts = s.split_whitespace();
     let cmd = parts.next()?;
-    if cmd != "Mouse" {
+    if cmd != "M" {
         return None;
     }
     let left = i8::from_str(parts.next()?).ok()? > 0;

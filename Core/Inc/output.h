@@ -6,8 +6,8 @@
 
 void write_mouse(uint8_t left, uint8_t right, int8_t x, int8_t y) {
     static char buffer[64];
-    sprintf(buffer, "Mouse %d %d %d %d\r\n", left, right, x, y);
-    HAL_UART_Transmit(&huart1, (uint8_t *) buffer, strlen(buffer), 1000);
+    int length = sprintf(buffer, "M %d %d %d %d\r\n", left, right, x, y);
+    HAL_UART_Transmit(&huart1, (uint8_t *) buffer, length, 1000);
 }
 
 void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *keys, uint8_t len) {
@@ -18,11 +18,11 @@ void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *ke
         length += sprintf(buffer + length, "%u ", keys[i]);
     }
     for (uint8_t i = 0; i < 6 - len; i++) {
-		length += sprintf(buffer + length, "%u ", 0);
-	}
+        length += sprintf(buffer + length, "%u ", 0);
+    }
 
     length += sprintf(buffer + length, "\r\n");
-    HAL_UART_Transmit(&huart1, (uint8_t *) buffer, strlen(buffer), 1000);
+    HAL_UART_Transmit(&huart1, (uint8_t *) buffer, length, 1000);
 }
 
 void generate_output_from_state(StateOutput *state) {
@@ -45,8 +45,8 @@ void generate_output_from_state(StateOutput *state) {
         keys[len++] = CODE_SPACE;
     }
     if (state->keyboard.reload.pressed) {
-		keys[len++] = CODE_R;
-	}
+        keys[len++] = CODE_R;
+    }
 
 
 //    if (state->keyboard.crouch) {
