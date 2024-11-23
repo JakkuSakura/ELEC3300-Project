@@ -1,6 +1,5 @@
 use crate::command::to_direction;
 use enigo::Keyboard;
-use eyre::ContextCompat;
 use std::str::FromStr;
 
 pub struct CommandKeyboard {
@@ -12,7 +11,7 @@ pub struct CommandKeyboard {
 pub fn parse_command_keyboard(s: &str) -> Option<CommandKeyboard> {
     let mut parts = s.split_whitespace();
     let cmd = parts.next()?;
-    if cmd != "Keyboard" {
+    if cmd != "K" {
         return None;
     }
     let ctrl = i8::from_str(parts.next()?).ok()? > 0;
@@ -20,7 +19,10 @@ pub fn parse_command_keyboard(s: &str) -> Option<CommandKeyboard> {
     let shift = i8::from_str(parts.next()?).ok()? > 0;
     let mut key = [0; 6];
     for i in 0..6 {
-        key[i] = parts.next()?.parse().ok()?;
+        let Some(next) = parts.next() else {
+            break;
+        };
+        key[i] = next.parse().ok()?;
     }
     Some(CommandKeyboard {
         ctrl,
