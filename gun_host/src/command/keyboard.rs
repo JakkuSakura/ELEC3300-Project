@@ -39,8 +39,7 @@ pub const CODE_S: u32 = 0x16;
 pub const CODE_D: u32 = 0x07;
 // jump
 pub const CODE_SPACE: u32 = 0x2C;
-// crouch
-pub const CODE_LSHIFT: u32 = 0x12;
+
 fn map_scancode_to_key(scan_code: u32) -> Option<enigo::Key> {
     if false {
         Some(enigo::Key::Other(scan_code))

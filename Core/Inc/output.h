@@ -48,6 +48,7 @@ void generate_output_from_state(StateOutput *state) {
 		keys[len++] = CODE_R;
 	}
 
+
 //    if (state->keyboard.crouch) {
 //        keys[len++] = CODE_LSHIFT;
 //    }
