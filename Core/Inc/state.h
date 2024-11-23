@@ -80,7 +80,8 @@ static const uint8_t MOUSE_LEFT = 0x01;
 static const uint8_t MOUSE_RIGHT = 0x02;
 static const int8_t MOUSE_SPEED = 8;
 typedef struct {
-    uint8_t status;
+    uint8_t left;
+    uint8_t right;
     // left negative, right positive
     int8_t speed_x;
     // up negative, down positive
@@ -154,10 +155,10 @@ static inline void update_state(State *state) {
     init_state_output(&state->output);
     // mouse
     if (state->input_btn.trigger.pressed) {
-        state->output.mouse.status |= MOUSE_LEFT;
+        state->output.mouse.left = 1;
     }
     if (state->input_btn.aim.pressed) {
-        state->output.mouse.status |= MOUSE_RIGHT;
+        state->output.mouse.right = 1;
     }
     // keyboard
     if (state->input_btn.reload.pressed) {

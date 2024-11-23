@@ -26,7 +26,7 @@ void write_keyboard(uint8_t ctrl, uint8_t shift, uint8_t alt, const uint16_t *ke
 }
 
 void generate_output_from_state(StateOutput *state) {
-    write_mouse(state->mouse.status & (1 << 0), state->mouse.status & (1 << 1), state->mouse.speed_x, state->mouse.speed_y);
+    write_mouse(state->mouse.left, state->mouse.right, state->mouse.speed_x, state->mouse.speed_y);
     uint16_t keys[6] = {};
     int len = 0;
     if (state->keyboard.forward.pressed) {
