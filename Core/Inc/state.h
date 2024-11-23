@@ -48,7 +48,6 @@ static const int32_t CODE_SPACE = 0x2C;
 // crouch does it has a key? what about modifier
 static const int32_t CODE_LSHIFT = 0x12;
 typedef struct {
-    uint32_t code;
     uint8_t pressed;
 } OutputKey;
 
@@ -65,13 +64,6 @@ typedef struct {
 
 static inline void init_output_keyboard(OutputKeyboard *output) {
     bzero(output, sizeof(OutputKeyboard));
-    output->reload.code = CODE_R;
-    output->forward.code = CODE_W;
-    output->backward.code = CODE_S;
-    output->left.code = CODE_A;
-    output->right.code = CODE_D;
-    output->jump.code = CODE_SPACE;
-    output->crouch.code = CODE_LSHIFT;
 }
 
 // fire
