@@ -12,7 +12,7 @@ typedef struct {
 typedef struct {
     StateButton trigger;
     StateButton jump;
-    StateButton switch_;
+    StateButton reset;
     StateButton reload;
     StateButton continuous;
     StateButton crouch;
@@ -178,34 +178,36 @@ static inline void update_state(State *state) {
         state->output.keyboard.left.pressed = 1;
     }
 
-    float threshold = 0.0f;
-    float scale = 0.0f;
+    if (!state->input_btn.reset.pressed) {
+        float threshold = 0.0f;
+        float scale = 0.0f;
 
-    if (state->input_btn.continuous.pressed) {
-        threshold = ROTATION_RELATIVE_THRESHOLD;
-        scale = ROTATION_RELATIVE_SCALE;
-        if (state->input_btn.continuous.reacted == 0) {
-            state->input_btn.continuous.reacted = 1;
+        if (state->input_btn.continuous.pressed) {
+            threshold = ROTATION_RELATIVE_THRESHOLD;
+            scale = ROTATION_RELATIVE_SCALE;
+            if (state->input_btn.continuous.reacted == 0) {
+                state->input_btn.continuous.reacted = 1;
+                state->rotation_offset = state->rotation;
+            }
+        } else {
+            state->input_btn.continuous.reacted = 0;
+            threshold = ROTATION_MOVE_THRESHOLD;
+            scale = ROTATION_MOVE_SCALE;
             state->rotation_offset = state->rotation;
         }
-    } else {
-        state->input_btn.continuous.reacted = 0;
-        threshold = ROTATION_MOVE_THRESHOLD;
-        scale = ROTATION_MOVE_SCALE;
-        state->rotation_offset = state->rotation;
-    }
 
-    float yaw_offset = state->rotation_diff.yaw;
-    if (fabsf(yaw_offset) > threshold) {
-        state->output.mouse.speed_x = MOUSE_SPEED * yaw_offset * scale;
-    } else {
-        state->output.mouse.speed_x = 0;
-    }
-    float pitch_offset = state->rotation_diff.pitch;
-    if (fabsf(pitch_offset) > threshold) {
-        state->output.mouse.speed_y = -MOUSE_SPEED * pitch_offset * scale;
-    } else {
-        state->output.mouse.speed_y = 0;
+        float yaw_offset = state->rotation_diff.yaw;
+        if (fabsf(yaw_offset) > threshold) {
+            state->output.mouse.speed_x = MOUSE_SPEED * yaw_offset * scale;
+        } else {
+            state->output.mouse.speed_x = 0;
+        }
+        float pitch_offset = state->rotation_diff.pitch;
+        if (fabsf(pitch_offset) > threshold) {
+            state->output.mouse.speed_y = -MOUSE_SPEED * pitch_offset * scale;
+        } else {
+            state->output.mouse.speed_y = 0;
+        }
     }
 
 

@@ -5,8 +5,7 @@
 #include "stm32f1xx_it.h"
 
 #define BTN_TRIGGER GPIOC, GPIO_PIN_2
-#define BTN_AIM GPIOC, GPIO_PIN_1
-#define BTN_SWITCH GPIOA, GPIO_PIN_2
+#define BTN_RESET GPIOA, GPIO_PIN_2
 #define BTN_CROUCH GPIOA, GPIO_PIN_8
 #define BTN_RELOAD GPIOD, GPIO_PIN_3
 #define BTN_CONTINUOUS GPIOC, GPIO_PIN_3
@@ -21,7 +20,7 @@ static inline void read_buttons(StateInputButton *state) {
     state->reload.pressed = HAL_GPIO_ReadPin(BTN_RELOAD);
 
 
-    state->switch_.pressed = HAL_GPIO_ReadPin(BTN_SWITCH);
+    state->reset.pressed = HAL_GPIO_ReadPin(BTN_RESET);
     state->jump.pressed = HAL_GPIO_ReadPin(BTN_JUMP);
     state->crouch.pressed = HAL_GPIO_ReadPin(BTN_CROUCH);
     state->aim.pressed = HAL_GPIO_ReadPin(BTN_AIM);
